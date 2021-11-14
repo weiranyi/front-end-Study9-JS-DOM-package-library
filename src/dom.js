@@ -117,5 +117,9 @@ window.dom = {
     off(node,evenName,fn){
         node.removeEventListener(evenName,fn)
     },
-
+    // 4.1、【查】查事件
+    find(selector,scope){
+        // 返回一个数组
+        return (scope || document).querySelectorAll(selector)
+    }
 };
