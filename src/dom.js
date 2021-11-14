@@ -109,5 +109,13 @@ window.dom = {
         has(node,className){
             return node.classList.contains(className);
         }
-    }
+    },
+    // 3.4、【改】改事件
+    on(node,evenName,fn){
+        node.addEventListener(evenName,fn)
+    },
+    off(node,evenName,fn){
+        node.removeEventListener(evenName,fn)
+    },
+
 };
