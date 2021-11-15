@@ -121,5 +121,50 @@ window.dom = {
     find(selector,scope){
         // 返回一个数组
         return (scope || document).querySelectorAll(selector)
+    },
+    parent(node){
+        return node.parentNode;
+    },
+    children(node){
+        return node.children;
+    },
+    siblings(node){
+        // 兄弟姐妹伪数组，再通过Array.from转换为数组
+        return Array.from(node.parentNode.children)
+            .filter(n=>n !== node);
+    },
+    next(node){
+        // 下一个节点
+        let x = node.nextSibling
+        while (x&& x.nodeType === 3){
+            x = x.nextSibling
+        }
+        return x;
+    },
+    previous(node){
+        // 下一个节点
+        let x = node.previousSibling
+        while (x&& x.nodeType === 3){
+            x = x.previousSibling
+        }
+        return x;
+    },
+    each(nodeList,fn){
+        for (let i = 0; i < nodeList.length; i++) {
+            fn.call(null,nodeList[i]);
+        }
+    },
+    index(node){
+        const list = dom.children(node.parentNode)
+        let i;
+        for (i = 0; i < list.length; i++) {
+            if (list[i]===node){
+                if (list[i]===node){
+                    break;
+                }
+            }
+            return i;
+        }
     }
+
 };
