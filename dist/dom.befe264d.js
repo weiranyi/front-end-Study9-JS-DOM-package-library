@@ -103,7 +103,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   // Override the current require with this new one
   return newRequire;
-})({"fRxd":[function(require,module,exports) {
+})({"dom.js":[function(require,module,exports) {
 window.dom = {
     // 1.1、【增】创建一个节点
     create: function create(string) {
@@ -111,12 +111,16 @@ window.dom = {
         var container = document.createElement('template');
         container.innerHTML = string.trim();
         return container.content.firstChild;
+        /* 操作template里面的dom，不能直接用template，要用template.content
+        * */
     },
 
     // 1.2、【增】新增一个弟弟
     after: function after(node, node2) {
         // console.log(node.nextSibling); 打印出下一个节点
         node.parentNode.insertBefore(node2, node.nextSibling);
+        /* node.nextSibling：下一个节点为：文本节点、null都可以运行
+        * */
     },
 
     // 1.3、【增】新增一个哥哥
@@ -131,8 +135,8 @@ window.dom = {
 
     // 1.5、【增】新增一个爸爸
     wrap: function wrap(node, parent) {
-        dom.before(node, parent); // 增加一个兄弟
-        dom.append(parent, node); // 再追加到node后
+        dom.before(node, parent); // 增加一个兄弟（1、parent做哥哥）
+        dom.append(parent, node); // 再追加到node后（2、parent做爸爸）
     },
 
     // 2.1、【删】移除
@@ -144,7 +148,7 @@ window.dom = {
 
     // 2.2、【删】清空
     empty: function empty(node) {
-        // node.innerHTML = '';
+        // node.innerHTML = ''; 就没有节点的引用了
         var childNodes = node.childNodes; // const childNodes = node.childNodes;
 
         var array = [];
@@ -153,6 +157,9 @@ window.dom = {
             array.push(dom.remove(node.firstChild));
             x = node.firstChild;
         }
+        /*
+        * 移除childNodes的节点时，length是动态变化的，所以采用while来遍历了！！！
+        * */
         return array;
     },
 
@@ -161,7 +168,9 @@ window.dom = {
      * 实现重载功能
      */
     attr: function attr(node, name, value) {
+        // 重载3个参数、2个参数
         if (arguments.length === 3) {
+            // 当参数长度
             node.setAttribute(name, value);
         } else if (arguments.length === 2) {
             return node.getAttribute(name);
@@ -189,23 +198,23 @@ window.dom = {
         if (arguments.length === 2) {
             node.innerHTML = string;
         } else if (arguments.length === 1) {
-            return node.innerHTML = string;
+            return node.innerHTML;
         }
     },
 
     // 3.3、【改】改样式
     style: function style(node, name, value) {
         if (arguments.length === 3) {
-            // dom.style(div,'color','red')
+            // dom.style(test,'border','1px solid black');
             node.style[name] = value;
         } else if (arguments.length === 2) {
             if (typeof name === 'string') {
-                // dom.style(div,'color')
+                // dom.style(test,'border')
                 return node.style[name];
             } else if (name instanceof Object) {
-                var object = name;
+                var object = name; // 设置别名
                 for (var key in object) {
-                    // dom.style(div,{color:'red'})
+                    // dom.style(test,{border:'1px solid red',color:'blue'});
                     // key:border/color
                     // node.style.border = ...
                     // node.style.color = ...
@@ -227,7 +236,7 @@ window.dom = {
             return node.classList.contains(className);
         }
     },
-    // 3.4、【改】改事件
+    // 3.5、【改】改事件
     on: function on(node, evenName, fn) {
         node.addEventListener(evenName, fn);
     },
@@ -235,9 +244,10 @@ window.dom = {
         node.removeEventListener(evenName, fn);
     },
 
-    // 4.1、【查】查事件
+
+    // 4.1、【查】
     find: function find(selector, scope) {
-        // 返回一个数组
+        // 返回一个数组,有范围就用scope，没有就从document中找
         return (scope || document).querySelectorAll(selector);
     },
     parent: function parent(node) {
@@ -278,13 +288,181 @@ window.dom = {
         var i = void 0;
         for (i = 0; i < list.length; i++) {
             if (list[i] === node) {
-                if (list[i] === node) {
-                    break;
-                }
+                break;
             }
-            return i;
         }
+        return i;
     }
 };
-},{}]},{},["fRxd"], null)
-//# sourceMappingURL=dom.20f7bf72.map
+},{}],"../../../../.config/yarn/global/node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var global = arguments[3];
+var OVERLAY_ID = '__parcel__error__overlay__';
+
+var OldModule = module.bundle.Module;
+
+function Module(moduleName) {
+  OldModule.call(this, moduleName);
+  this.hot = {
+    data: module.bundle.hotData,
+    _acceptCallbacks: [],
+    _disposeCallbacks: [],
+    accept: function (fn) {
+      this._acceptCallbacks.push(fn || function () {});
+    },
+    dispose: function (fn) {
+      this._disposeCallbacks.push(fn);
+    }
+  };
+
+  module.bundle.hotData = null;
+}
+
+module.bundle.Module = Module;
+
+var parent = module.bundle.parent;
+if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
+  var hostname = '' || location.hostname;
+  var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '53681' + '/');
+  ws.onmessage = function (event) {
+    var data = JSON.parse(event.data);
+
+    if (data.type === 'update') {
+      console.clear();
+
+      data.assets.forEach(function (asset) {
+        hmrApply(global.parcelRequire, asset);
+      });
+
+      data.assets.forEach(function (asset) {
+        if (!asset.isNew) {
+          hmrAccept(global.parcelRequire, asset.id);
+        }
+      });
+    }
+
+    if (data.type === 'reload') {
+      ws.close();
+      ws.onclose = function () {
+        location.reload();
+      };
+    }
+
+    if (data.type === 'error-resolved') {
+      console.log('[parcel] ✨ Error resolved');
+
+      removeErrorOverlay();
+    }
+
+    if (data.type === 'error') {
+      console.error('[parcel] 🚨  ' + data.error.message + '\n' + data.error.stack);
+
+      removeErrorOverlay();
+
+      var overlay = createErrorOverlay(data);
+      document.body.appendChild(overlay);
+    }
+  };
+}
+
+function removeErrorOverlay() {
+  var overlay = document.getElementById(OVERLAY_ID);
+  if (overlay) {
+    overlay.remove();
+  }
+}
+
+function createErrorOverlay(data) {
+  var overlay = document.createElement('div');
+  overlay.id = OVERLAY_ID;
+
+  // html encode message and stack trace
+  var message = document.createElement('div');
+  var stackTrace = document.createElement('pre');
+  message.innerText = data.error.message;
+  stackTrace.innerText = data.error.stack;
+
+  overlay.innerHTML = '<div style="background: black; font-size: 16px; color: white; position: fixed; height: 100%; width: 100%; top: 0px; left: 0px; padding: 30px; opacity: 0.85; font-family: Menlo, Consolas, monospace; z-index: 9999;">' + '<span style="background: red; padding: 2px 4px; border-radius: 2px;">ERROR</span>' + '<span style="top: 2px; margin-left: 5px; position: relative;">🚨</span>' + '<div style="font-size: 18px; font-weight: bold; margin-top: 20px;">' + message.innerHTML + '</div>' + '<pre>' + stackTrace.innerHTML + '</pre>' + '</div>';
+
+  return overlay;
+}
+
+function getParents(bundle, id) {
+  var modules = bundle.modules;
+  if (!modules) {
+    return [];
+  }
+
+  var parents = [];
+  var k, d, dep;
+
+  for (k in modules) {
+    for (d in modules[k][1]) {
+      dep = modules[k][1][d];
+      if (dep === id || Array.isArray(dep) && dep[dep.length - 1] === id) {
+        parents.push(k);
+      }
+    }
+  }
+
+  if (bundle.parent) {
+    parents = parents.concat(getParents(bundle.parent, id));
+  }
+
+  return parents;
+}
+
+function hmrApply(bundle, asset) {
+  var modules = bundle.modules;
+  if (!modules) {
+    return;
+  }
+
+  if (modules[asset.id] || !bundle.parent) {
+    var fn = new Function('require', 'module', 'exports', asset.generated.js);
+    asset.isNew = !modules[asset.id];
+    modules[asset.id] = [fn, asset.deps];
+  } else if (bundle.parent) {
+    hmrApply(bundle.parent, asset);
+  }
+}
+
+function hmrAccept(bundle, id) {
+  var modules = bundle.modules;
+  if (!modules) {
+    return;
+  }
+
+  if (!modules[id] && bundle.parent) {
+    return hmrAccept(bundle.parent, id);
+  }
+
+  var cached = bundle.cache[id];
+  bundle.hotData = {};
+  if (cached) {
+    cached.hot.data = bundle.hotData;
+  }
+
+  if (cached && cached.hot && cached.hot._disposeCallbacks.length) {
+    cached.hot._disposeCallbacks.forEach(function (cb) {
+      cb(bundle.hotData);
+    });
+  }
+
+  delete bundle.cache[id];
+  bundle(id);
+
+  cached = bundle.cache[id];
+  if (cached && cached.hot && cached.hot._acceptCallbacks.length) {
+    cached.hot._acceptCallbacks.forEach(function (cb) {
+      cb();
+    });
+    return true;
+  }
+
+  return getParents(global.parcelRequire, id).some(function (id) {
+    return hmrAccept(global.parcelRequire, id);
+  });
+}
+},{}]},{},["../../../../.config/yarn/global/node_modules/parcel/src/builtins/hmr-runtime.js","dom.js"], null)
+//# sourceMappingURL=/dom.befe264d.map
